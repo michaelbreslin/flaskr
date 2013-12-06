@@ -23,7 +23,7 @@ app.config.from_object(__name__)
 #FLASKR_SETTINGS = '/Users/mike/SkyDrive/Personal/Education/flask/flaskr/FLASKR_SETTINGS.ini'
 #app.config.from_envvar('FLASKR_SETTINGS', silent=False)
 
-# Make sure couchdb and couchdbkit are installed
+# Make sure you are installed
 def connect_db():
 	"""Returns a new connection to the Cloudant database."""
 	app.logger.debug('Connecting to Cloudant database...')
@@ -38,14 +38,6 @@ def init_db():
 	loader = couchdbkit.loaders.FileSystemDocsLoader('_design')
 	loader.sync(db, verbose=True)
 
-"""
-class Entry(Document):
-	author = StringProperty()
-	date = DateTimeProperty()
-	title = StringProperty()
-	text = StringProperty()
-"""
-
 @app.before_request
 def before_request():
     """Make sure we are connected to the database each request."""
@@ -59,8 +51,7 @@ def teardown_request(exception):
 
 @app.route('/')
 def show_entries():
-	#entries = g.db.view('entry/all', schema=Entry)
-	# entries = g.db.all_docs(include_docs=True, schema=Entry)
+    # Using _all_docs API endpoint and setting include_docs=true
 	options = dict(include_docs=True)
 	entries = []
 	for row in g.db.all_docs(params=options):
@@ -68,10 +59,6 @@ def show_entries():
 		doc = row['doc']
 		if doc.get('text') and doc.get('title'):
 			entries.append(doc)
-	# entries = g.db.all_docs(params=options)
-	# app.logger.debug(entries.all())
-	#for entry in entries:
-	#    app.logger.debug(entry.title)
 	return render_template('show_entries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
@@ -110,7 +97,6 @@ app.debug = True
 app.logger.setLevel(logging.DEBUG)
  
 #logging.basicConfig(filename='example.log',level=logging.INFO)
-#couchdbkit.set_logging('info')
 
 if __name__ == '__main__':
 	app.run()

@@ -19,8 +19,8 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 
 # Set this environment variable using export FLASKR_SETTINGS=....
-#FLASKR_SETTINGS = '/Users/mike/SkyDrive/Personal/Education/flask/flaskr/FLASKR_SETTINGS.ini'
-#app.config.from_envvar('FLASKR_SETTINGS', silent=False)
+# export FLASKR_SETTINGS = '/tmp/flaskr/FLASKR_SETTINGS.ini'
+# app.config.from_envvar('FLASKR_SETTINGS', silent=False)
 
 # Make sure couchdb and couchdbkit are installed
 def connect_db():
@@ -53,11 +53,11 @@ def teardown_request(exception):
 
 @app.route('/')
 def show_entries():
-	#entries = g.db.view('entry/all', schema=Entry)
+	# using a view (NOTE: you will have to create the appropriate view in CouchDB/Cloudant)
+	# entries = g.db.view('entry/all', schema=Entry)
+	# using the primary index _all_docs
 	entries = g.db.all_docs(include_docs=True, schema=Entry)
 	app.logger.debug(entries.all())
-	#for entry in entries:
-	#    app.logger.debug(entry.title)
 	return render_template('show_entries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
@@ -92,9 +92,9 @@ def logout():
 	return redirect(url_for('show_entries'))
 
 app.debug = True
-app.logger.setLevel(logging.DEBUG)
+app.logger.setLevel(logging.INFO)
  
-#logging.basicConfig(filename='example.log',level=logging.INFO)
+# logging.basicConfig(filename='example.log',level=logging.INFO)
 couchdbkit.set_logging('info')
 
 if __name__ == '__main__':
