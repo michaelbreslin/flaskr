@@ -31,13 +31,6 @@ def connect_db():
 	return account.database(app.config['DATABASE'])
 	#app.logger.debug('Connected to Cloudant database...')
 
-def init_db():
-	"""Creates the database views."""
-	# This is not applicable when using _all_docs API
-	db = connect_db()
-	loader = couchdbkit.loaders.FileSystemDocsLoader('_design')
-	loader.sync(db, verbose=True)
-
 @app.before_request
 def before_request():
     """Make sure we are connected to the database each request."""
